@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PROXY VPN</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --blue-deep: #060b24;
+    --blue-dark: #0d1545;
+    --blue-mid: #1a2980;
+    --blue-bright: #2563eb;
+    --blue-glow: #3b82f6;
+    --blue-light: #60a5fa;
+    --blue-pale: #93c5fd;
+    --cyan: #38bdf8;
+    --white: #f0f8ff;
+    --glass: rgba(37, 99, 235, 0.1);
+    --glass-border: rgba(96, 165, 250, 0.2);
+  }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--blue-deep);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(175deg,
+      #060b24 0%,
+      #0a1235 20%,
+      #0e1a55 45%,
+      #0a1235 70%,
+      #060b24 100%);
+  }
+
+  .bg-mesh {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    animation: orb-float 10s ease-in-out infinite;
+  }
+
+  .bg-orb-1 {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(37,99,235,0.22), transparent);
+    top: -100px; left: -100px;
+    animation-delay: 0s;
+  }
+
+  .bg-orb-2 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(56,189,248,0.15), transparent);
+    top: 180px; right: -80px;
+    animation-delay: -4s;
+  }
+
+  .bg-orb-3 {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(26,41,128,0.3), transparent);
+    bottom: 80px; left: 0;
+    animation-delay: -7s;
+  }
+
+  @keyframes orb-float {
+    0%, 100% { transform: translate(0, 0); }
+    40% { transform: translate(20px, -25px); }
+    70% { transform: translate(-12px, 12px); }
+  }
+
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    pointer-events: none;
+  }
+
+  .particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--blue-light);
+    opacity: 0;
+    animation: particle-float linear infinite;
+  }
+
+  @keyframes particle-float {
+    0% { opacity: 0; transform: translateY(100vh); }
+    8% { opacity: 0.5; }
+    92% { opacity: 0.2; }
+    100% { opacity: 0; transform: translateY(-30px); }
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    padding: 0 20px 40px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding-top: 52px;
+    padding-bottom: 4px;
+  }
+
+  .brand-name {
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 8px;
+    color: var(--blue-pale);
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .brand-sub {
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    opacity: 0.4;
+    margin-top: 3px;
+    font-weight: 300;
+    text-transform: uppercase;
+  }
+
+  /* Logo */
+  .logo-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 0 26px;
+  }
+
+  .logo-wrapper {
+    position: relative;
+    width: 186px;
+    height: 186px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ellipse-ring {
+    position: absolute;
+    border-radius: 50%;
+    animation: ring-spin linear infinite;
+  }
+
+  .ring-1 {
+    width: 150px; height: 150px;
+    border: 1.5px solid transparent;
+    border-top-color: rgba(96, 165, 250, 0.8);
+    border-right-color: rgba(96, 165, 250, 0.2);
+    border-bottom-color: rgba(96, 165, 250, 0.1);
+    border-left-color: rgba(96, 165, 250, 0.4);
+    animation-duration: 4.5s;
+  }
+
+  .ring-2 {
+    width: 164px; height: 164px;
+    border: 1px solid transparent;
+    border-top-color: rgba(56, 189, 248, 0.15);
+    border-right-color: rgba(56, 189, 248, 0.7);
+    border-bottom-color: rgba(56, 189, 248, 0.3);
+    border-left-color: rgba(56, 189, 248, 0.1);
+    animation-duration: 7s;
+    animation-direction: reverse;
+  }
+
+  .ring-3 {
+    width: 178px; height: 178px;
+    border: 1px solid transparent;
+    border-top-color: rgba(37, 99, 235, 0.12);
+    border-left-color: rgba(37, 99, 235, 0.55);
+    border-right-color: rgba(37, 99, 235, 0.12);
+    border-bottom-color: rgba(37, 99, 235, 0.25);
+    animation-duration: 11s;
+  }
+
+  .ring-dashed {
+    width: 142px; height: 142px;
+    border: 1px dashed rgba(96, 165, 250, 0.2);
+    animation-duration: 15s;
+    animation-direction: reverse;
+  }
+
+  @keyframes ring-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .logo-glow {
+    position: absolute;
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.35) 0%, transparent 70%);
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.25); opacity: 1; }
+  }
+
+  .logo-box {
+    width: 90px; height: 90px;
+    border-radius: 26px;
+    position: relative;
+    z-index: 5;
+    background: linear-gradient(145deg, #1246c8 0%, #2563eb 40%, #38bdf8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 0 0 1.5px rgba(96,165,250,0.35),
+      0 8px 36px rgba(37,99,235,0.55),
+      0 0 70px rgba(59,130,246,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+
+  /* Sub card */
+  .sub-card {
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 11px;
+    backdrop-filter: blur(16px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sub-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20%; right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.45), transparent);
+  }
+
+  .sub-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 11px;
+  }
+
+  .sub-name {
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--white);
+    letter-spacing: 0.3px;
+  }
+
+  .sub-date {
+    font-size: 13px;
+    color: var(--blue-pale);
+    margin-top: 3px;
+    font-weight: 300;
+  }
+
+  .sub-badge {
+    background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(37,99,235,0.15));
+    border: 1px solid rgba(56,189,248,0.35);
+    border-radius: 10px;
+    padding: 4px 11px;
+    font-size: 11px;
+    color: var(--cyan);
+    font-weight: 600;
+    letter-spacing: 0.4px;
+  }
+
+  .sub-foot {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #22d3ee;
+    box-shadow: 0 0 8px #22d3ee, 0 0 16px rgba(34,211,238,0.35);
+    flex-shrink: 0;
+    animation: dot-blink 2.5s ease-in-out infinite;
+  }
+
+  @keyframes dot-blink {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
+  .sub-devices-txt {
+    font-size: 13px;
+    color: var(--blue-light);
+  }
+
+  /* Buttons */
+  .btn {
+    width: 100%;
+    border-radius: 18px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.18s ease;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 11px;
+    padding: 17px 20px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1740c8 0%, #2563eb 55%, #1b52db 100%);
+    color: white;
+    box-shadow: 0 4px 22px rgba(37,99,235,0.42), inset 0 1px 0 rgba(255,255,255,0.1);
+    border: 1px solid rgba(96,165,250,0.25);
+  }
+
+  .btn-primary:active { transform: scale(0.975); }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+    animation: btn-shine 4s ease infinite;
+  }
+
+  @keyframes btn-shine {
+    0% { left: -100%; }
+    40%, 100% { left: 150%; }
+  }
+
+  .btn-price {
+    margin-left: auto;
+    background: rgba(255,255,255,0.15);
+    border-radius: 9px;
+    padding: 3px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .btn-glass {
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    color: var(--blue-pale);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-glass:active:not(.btn-off) {
+    background: rgba(37,99,235,0.16);
+    transform: scale(0.978);
+  }
+
+  .btn-off {
+    opacity: 0.45;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(96,165,250,0.15), transparent);
+    margin: 4px 0 14px;
+  }
+
+  .btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .btn-row .btn {
+    margin-bottom: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    padding: 18px 10px;
+    font-size: 13px;
+    border-radius: 16px;
+  }
+
+  .btn-icon { font-size: 24px; line-height: 1; }
+
+  .device-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--cyan);
+    background: rgba(56,189,248,0.1);
+    border: 1px solid rgba(56,189,248,0.22);
+    border-radius: 6px;
+    padding: 2px 8px;
+    letter-spacing: 0.3px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .safe { height: max(env(safe-area-inset-bottom), 24px); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="bg-mesh">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+  </div>
+  <div class="bg-grid"></div>
+  <div class="particles" id="pts"></div>
+
+  <div class="content">
+    <div class="header">
+      <div class="brand-name">PROXY</div>
+      <div class="brand-sub">Secure · Fast · Private</div>
+    </div>
+
+    <div class="logo-section">
+      <div class="logo-wrapper">
+        <div class="ellipse-ring ring-dashed"></div>
+        <div class="ellipse-ring ring-3"></div>
+        <div class="ellipse-ring ring-2"></div>
+        <div class="ellipse-ring ring-1"></div>
+        <div class="logo-glow"></div>
+        <div class="logo-box">
+          <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+            <rect x="9" y="9" width="11" height="28" rx="5.5" fill="white" opacity="0.96"/>
+            <rect x="26" y="9" width="11" height="28" rx="5.5" fill="white" opacity="0.96"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscription card -->
+    <div class="sub-card">
+      <div class="sub-head">
+        <div>
+          <div class="sub-name">PROXY VPN</div>
+          <div class="sub-date">до <span id="exp-txt">—</span></div>
+        </div>
+        <div class="sub-badge" id="sub-badge">Активна</div>
+      </div>
+      <div class="sub-foot">
+        <div class="dot" id="status-dot"></div>
+        <div class="sub-devices-txt">Устройств • 1 &nbsp;📱&nbsp; Активна</div>
+      </div>
+    </div>
+
+    <!-- Extend -->
+    <button class="btn btn-primary" id="btn-extend">
+      <span>🔗</span>
+      <span>Продлить подписку</span>
+      <span class="btn-price">от 25₽</span>
+    </button>
+
+    <div class="divider"></div>
+
+    <!-- Setup (auto-detects device) -->
+    <button class="btn btn-glass btn-off" id="btn-setup">
+      <span>⚙️</span>
+      <span style="flex:1; text-align:left;">Установка и настройка</span>
+      <span class="device-tag" id="dev-tag">...</span>
+    </button>
+
+    <!-- Profile & Help -->
+    <div class="btn-row">
+      <button class="btn btn-glass btn-off">
+        <span class="btn-icon">👤</span>
+        <span>Профиль</span>
+      </button>
+      <button class="btn btn-glass btn-off">
+        <span class="btn-icon">💬</span>
+        <span>Помощь</span>
+      </button>
+    </div>
+
+    <div class="safe"></div>
+  </div>
+</div>
+
+<script>
+  // === Device detection ===
+  const ua = navigator.userAgent;
+  let dev = 'Desktop';
+  if (/iPhone|iPad|iPod/i.test(ua)) dev = 'iOS';
+  else if (/Android/i.test(ua)) dev = 'Android';
+  else if (/Windows/i.test(ua)) dev = 'Windows';
+  else if (/Macintosh/i.test(ua)) dev = 'macOS';
+  else if (/Linux/i.test(ua)) dev = 'Linux';
+  document.getElementById('dev-tag').textContent = dev;
+
+  // === Subscription expiry ===
+  // Change this date dynamically from your backend
+  const expDate = new Date('2026-03-17');
+  const now = new Date();
+  const daysLeft = Math.ceil((expDate - now) / 86400000);
+  const months = ['января','февраля','марта','апреля','мая','июня',
+                  'июля','августа','сентября','октября','ноября','декабря'];
+  document.getElementById('exp-txt').textContent =
+    `${expDate.getDate()} ${months[expDate.getMonth()]} ${expDate.getFullYear()} г.`;
+
+  const badge = document.getElementById('sub-badge');
+  const dot = document.getElementById('status-dot');
+  if (daysLeft <= 0) {
+    badge.textContent = 'Истекла';
+    badge.style.cssText += ';color:#f87171;border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.1)';
+    dot.style.cssText += ';background:#f87171;box-shadow:0 0 8px #f87171';
+  } else if (daysLeft <= 3) {
+    badge.textContent = daysLeft + ' дн.';
+    badge.style.cssText += ';color:#fbbf24;border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)';
+    dot.style.cssText += ';background:#fbbf24;box-shadow:0 0 8px #fbbf24';
+  }
+
+  // === Extend button ===
+  document.getElementById('btn-extend').addEventListener('click', () => {
+    // Replace with your bot link
+    if (window.Telegram && Telegram.WebApp) {
+      Telegram.WebApp.openTelegramLink('https://t.me/proxyvvbot');
+    } else {
+      window.open('https://t.me/proxyvvbot', '_blank');
+    }
+  });
+
+  // === Particles ===
+  const pts = document.getElementById('pts');
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.width = p.style.height = (1 + Math.random() * 2) + 'px';
+    p.style.animationDuration = (9 + Math.random() * 14) + 's';
+    p.style.animationDelay = (Math.random() * 18) + 's';
+    pts.appendChild(p);
+  }
+
+  // === Telegram WebApp init ===
+  if (window.Telegram && Telegram.WebApp) {
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+  }
+</script>
+</body>
+</html>
