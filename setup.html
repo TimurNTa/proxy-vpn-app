@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Установка PROXY VPN</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --blue-deep: #060b24;
+    --blue-dark: #0d1545;
+    --blue-bright: #2563eb;
+    --blue-glow: #3b82f6;
+    --blue-light: #60a5fa;
+    --blue-pale: #93c5fd;
+    --cyan: #38bdf8;
+    --white: #f0f8ff;
+    --glass: rgba(37, 99, 235, 0.1);
+    --glass-border: rgba(96, 165, 250, 0.2);
+  }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: linear-gradient(175deg, #060b24 0%, #0a1235 20%, #0e1a55 45%, #0a1235 70%, #060b24 100%);
+    min-height: 100vh;
+    color: var(--white);
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    padding: 24px 0;
+  }
+
+  .brand {
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 7px;
+    color: var(--blue-pale);
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 12px;
+    color: var(--white);
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--blue-light);
+    margin-top: 6px;
+    opacity: 0.8;
+  }
+
+  /* Platform tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 16px 0;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex: 0 0 auto;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 12px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue-pale);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tab:hover { background: rgba(37, 99, 235, 0.15); }
+
+  .tab.active {
+    background: linear-gradient(135deg, #1740c8, #2563eb);
+    border-color: rgba(96, 165, 250, 0.4);
+    color: white;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+  }
+
+  .tab-icon { font-size: 18px; }
+
+  /* Content sections */
+  .content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .content.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(12px);
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--white);
+  }
+
+  /* Client selection */
+  .clients {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .client-btn {
+    background: rgba(37, 99, 235, 0.08);
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .client-btn:hover {
+    border-color: var(--blue-light);
+    background: rgba(37, 99, 235, 0.12);
+  }
+
+  .client-btn.active {
+    border-color: var(--cyan);
+    background: rgba(56, 189, 248, 0.12);
+  }
+
+  .client-btn.recommended::before {
+    content: '⭐ Рекомендуем';
+    display: block;
+    font-size: 10px;
+    color: var(--cyan);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .client-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--white);
+  }
+
+  /* Buttons */
+  .btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1740c8, #2563eb);
+    color: white;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+  }
+
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-secondary {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--blue-pale);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-secondary:active {
+    background: rgba(37, 99, 235, 0.15);
+    transform: scale(0.98);
+  }
+
+  .btn-icon { font-size: 20px; }
+
+  /* Steps */
+  .steps {
+    list-style: none;
+    padding: 0;
+  }
+
+  .step {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(96, 165, 250, 0.1);
+    display: flex;
+    gap: 12px;
+  }
+
+  .step:last-child { border-bottom: none; }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1740c8, #2563eb);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .step-text {
+    flex: 1;
+    padding-top: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--blue-pale);
+  }
+
+  .note {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--cyan);
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  .note-icon {
+    display: inline-block;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="brand">PROXY VPN</div>
+    <div class="title">Быстрая настройка</div>
+    <div class="subtitle">Выберите систему и следуйте инструкции</div>
+  </div>
+
+  <!-- Platform tabs -->
+  <div class="tabs">
+    <div class="tab active" data-platform="android">
+      <span class="tab-icon">🤖</span>
+      <span>Android</span>
+    </div>
+    <div class="tab" data-platform="ios">
+      <span class="tab-icon">🍎</span>
+      <span>iOS</span>
+    </div>
+    <div class="tab" data-platform="windows">
+      <span class="tab-icon">🪟</span>
+      <span>Windows</span>
+    </div>
+    <div class="tab" data-platform="android-tv">
+      <span class="tab-icon">📺</span>
+      <span>Android TV</span>
+    </div>
+    <div class="tab" data-platform="apple-tv">
+      <span class="tab-icon">🍏</span>
+      <span>Apple TV</span>
+    </div>
+  </div>
+
+  <!-- Android content -->
+  <div class="content active" data-content="android">
+    <div class="section">
+      <div class="section-title">Выберите VPN-клиент</div>
+      <div class="clients">
+        <div class="client-btn recommended active" data-client="hiddify">
+          <div class="client-name">Hiddify</div>
+        </div>
+        <div class="client-btn" data-client="v2rayng">
+          <div class="client-name">v2rayNG</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="hiddify-android">
+      <div class="section-title">📥 Установка Hiddify</div>
+      <a href="https://play.google.com/store/apps/details?id=app.hiddify.com" target="_blank" class="btn btn-primary">
+        <span class="btn-icon">📱</span>
+        <span>Открыть в Google Play</span>
+      </a>
+      <a href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk" class="btn btn-secondary">
+        <span class="btn-icon">📦</span>
+        <span>Скачать APK</span>
+      </a>
+    </div>
+
+    <div class="section" style="display:none;" id="v2rayng-android">
+      <div class="section-title">📥 Установка v2rayNG</div>
+      <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank" class="btn btn-primary">
+        <span class="btn-icon">📱</span>
+        <span>Открыть в Google Play</span>
+      </a>
+      <a href="https://github.com/2dust/v2rayNG/releases/latest/download/v2rayNG_1.8.29_arm64-v8a.apk" class="btn btn-secondary">
+        <span class="btn-icon">📦</span>
+        <span>Скачать APK</span>
+      </a>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔗 Добавьте подписку</div>
+      <button class="btn btn-primary" id="add-sub-btn">
+        <span class="btn-icon">⚡</span>
+        <span>Добавить подписку автоматически</span>
+      </button>
+      <div class="note">
+        <span class="note-icon">💡</span>
+        Приложение откроется автоматически и подписка будет добавлена
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📝 Подключение</div>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Нажмите кнопку "Добавить подписку автоматически" выше</div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Приложение откроется и предложит добавить профиль</div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Нажмите кнопку подключения ▶️ в приложении</div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Готово! VPN работает 🎉</div>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- iOS content -->
+  <div class="content" data-content="ios">
+    <div class="section">
+      <div class="section-title">Выберите VPN-клиент</div>
+      <div class="clients">
+        <div class="client-btn recommended active" data-client="streisand">
+          <div class="client-name">Streisand</div>
+        </div>
+        <div class="client-btn" data-client="v2box">
+          <div class="client-name">V2Box</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📥 Установка</div>
+      <a href="https://apps.apple.com/app/streisand/id6450534064" target="_blank" class="btn btn-primary">
+        <span class="btn-icon">🍎</span>
+        <span>Открыть в App Store</span>
+      </a>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔗 Добавьте подписку</div>
+      <button class="btn btn-primary" id="add-sub-ios-btn">
+        <span class="btn-icon">⚡</span>
+        <span>Добавить подписку автоматически</span>
+      </button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📝 Подключение</div>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Установите приложение из App Store</div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Нажмите "Добавить подписку автоматически"</div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Подтвердите добавление профиля</div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Нажмите кнопку подключения ▶️</div>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Windows content -->
+  <div class="content" data-content="windows">
+    <div class="section">
+      <div class="section-title">Выберите VPN-клиент</div>
+      <div class="clients">
+        <div class="client-btn recommended active">
+          <div class="client-name">Hiddify</div>
+        </div>
+        <div class="client-btn">
+          <div class="client-name">v2rayN</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📥 Установка Hiddify</div>
+      <a href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe" class="btn btn-primary">
+        <span class="btn-icon">💻</span>
+        <span>Скачать для Windows</span>
+      </a>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📝 Настройка</div>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Скачайте и установите приложение</div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Откройте приложение и нажмите ➕ → "Новая подписка"</div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Вставьте ссылку-подписку из бота (кнопка "🔑 Мой VPN")</div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Нажмите кнопку подключения ▶️</div>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Android TV content -->
+  <div class="content" data-content="android-tv">
+    <div class="section">
+      <div class="section-title">📥 Установка Hiddify</div>
+      <a href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-TV.apk" class="btn btn-primary">
+        <span class="btn-icon">📺</span>
+        <span>Скачать APK для Android TV</span>
+      </a>
+      <div class="note">
+        <span class="note-icon">💡</span>
+        Скачайте APK на телефон, затем установите через Downloader или Send Files to TV
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📝 Настройка</div>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Установите APK на Android TV</div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Откройте Hiddify и нажмите ➕ → "Новая подписка"</div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Введите ссылку-подписку из бота</div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Подключитесь ▶️</div>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Apple TV content -->
+  <div class="content" data-content="apple-tv">
+    <div class="section">
+      <div class="section-title">📺 Установка на Apple TV</div>
+      <div class="note">
+        <span class="note-icon">ℹ️</span>
+        К сожалению, прямая установка VPN-клиентов на Apple TV ограничена. Рекомендуем настроить VPN на роутере или использовать AirPlay с устройства с активным VPN.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔄 Альтернативные варианты</div>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Настройте VPN на роутере (подробная инструкция в поддержке)</div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Используйте AirPlay с iPhone/iPad с активным VPN</div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Свяжитесь с поддержкой для индивидуального решения</div>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Get user UUID from Telegram WebApp
+  let userUUID = 'demo-uuid-replace-me';
+  
+  if (window.Telegram && Telegram.WebApp) {
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+    
+    // Parse initData to get user UUID (you'll need to pass this from backend)
+    const initData = Telegram.WebApp.initDataUnsafe;
+    if (initData && initData.user) {
+      // Fetch UUID from backend using user.id
+      // For now using placeholder
+    }
+  }
+
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const platform = tab.dataset.platform;
+      
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+      document.querySelector(`[data-content="${platform}"]`).classList.add('active');
+    });
+  });
+
+  // Client switching (Android)
+  document.querySelectorAll('.client-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const parent = this.closest('.section');
+      parent.querySelectorAll('.client-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      
+      const client = this.dataset.client;
+      if (client === 'hiddify') {
+        document.getElementById('hiddify-android').style.display = 'block';
+        document.getElementById('v2rayng-android').style.display = 'none';
+      } else if (client === 'v2rayng') {
+        document.getElementById('hiddify-android').style.display = 'none';
+        document.getElementById('v2rayng-android').style.display = 'block';
+      }
+    });
+  });
+
+  // Add subscription button
+  document.getElementById('add-sub-btn')?.addEventListener('click', () => {
+    const subURL = `http://155.212.229.11:8080/sub/${userUUID}`;
+    
+    // Try Hiddify deep link first
+    window.location.href = `hiddify://import/${encodeURIComponent(subURL)}`;
+    
+    // Fallback to v2rayNG if Hiddify not installed
+    setTimeout(() => {
+      window.location.href = `v2rayng://install-sub?url=${encodeURIComponent(subURL)}`;
+    }, 1000);
+  });
+
+  document.getElementById('add-sub-ios-btn')?.addEventListener('click', () => {
+    const subURL = `http://155.212.229.11:8080/sub/${userUUID}`;
+    
+    // iOS Streisand deep link
+    window.location.href = `streisand://add/${encodeURIComponent(subURL)}`;
+  });
+
+  // Auto-detect platform
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/i.test(ua)) {
+    document.querySelector('[data-platform="ios"]')?.click();
+  } else if (/Windows/i.test(ua)) {
+    document.querySelector('[data-platform="windows"]')?.click();
+  }
+</script>
+</body>
+</html>
